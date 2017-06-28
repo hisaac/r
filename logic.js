@@ -22,17 +22,18 @@ let p2 = {
 	playsFirst: false
 }
 
-function init(){
+(function init(){
 	while (!gameEnd) {
 		checkWinner();
+		checkPlaysFirst();
 		playRound();
 	}
-}
+})();
 
 function playRound() {
-	if ((p1.cardPlayed === p2.cardPlayed) ||
-	    (p1.cardPlayed.name === "Jester" && p2.cardPlayed.name !== "Wizard") ||
-	    (p2.cardPlayed.name === "Jester" && p1.cardPlayed.name !== "Wizard")) {
+	checkGeneral();
+
+	if (p1.cardPlayed.name === p2.cardPlayed.name) {
 		roundWorth ++
 	} else {
 		switch(p1.cardPlayed.name){
@@ -68,8 +69,6 @@ function playRound() {
 				princePlayed();
 				break;
 		}
-
-		checkWinner();
 	}
 }
 
@@ -77,7 +76,7 @@ function playRound() {
 
 function jesterPlayed() {
 	if (p2.cardPlayed.name === "Wizard") {
-		p2.score++;
+		addScore(p2);
 	} else {
 		roundWorth++;
 	}
@@ -92,10 +91,7 @@ function princessPlayed() {
 }
 
 function spyPlayed() {
-	if (p2.cardPlayed.name === "Jester") {
-		roundWorth++;
-		return;
-	} else if (p2.cardPlayed.name !== "Wizard") {
+	if (p2.cardPlayed.name !== "Wizard") {
 		p2.playsFirst = true;
 	}
 
@@ -106,12 +102,59 @@ function spyPlayed() {
 	}
 }
 
+function assassinPlayed() {
+	if (p2.cardPlayed.strength > p1.cardPlayed.strength) {
+		addScore(p1);
+	} else {
+		addScore(p2);
+	}
+}
+
+function ministerPlayed() {
+	if (p1.cardPlayed.strength > p2.cardPlayed.strength) {
+		addScore(p1);
+		addScore(p1);
+	} else {
+		addScore(p2);
+	}
+}
+
+function wizardPlayed() {
+	if (p1.cardPlayed.strength > p2.cardPlayed.strength) {
+		addScore(p1);
+	} else {
+		addScore(p2);
+	}
+}
+
+function generalPlayed() {
+	if (p2.cardPlayed.name !== "Wizard") {
+		p1.generalPlayed = true;
+	}
+
+	if (p1.cardPlayed.strength > p2.cardPlayed.strength) {
+		addScore(p1);
+	} else {
+		addScore(p2);
+	}
+}
+
+function princePlayed() {
+	if (p2.cardPlayed.name === "Princess") {
+		p2.winner === true;
+	} else {
+		addScore(p1);
+	}
+}
+
 //-------------------------------- Utilities ---------------------------------//
 
 function addScore(player) {
 	player.score += roundWorth;
 	roundWorth = 1;
 }
+
+function checkPlaysFirst() {}
 
 function checkWinner() {
 	if (p1.score >= 4) {
@@ -120,5 +163,15 @@ function checkWinner() {
 	} else if (p2.score >= 4) {
 		alert('Player 2 wins!');
 		gameEnd = true;
+	}
+}
+
+function checkGeneral() {
+	if (p1.generalPlayed) {
+		p1.cardPlayed.strength += 2;
+	}
+
+	if (p2.generalPlayed) {
+		p2.cardPlayed.strength += 2;
 	}
 }
