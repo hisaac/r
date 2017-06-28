@@ -1,3 +1,4 @@
+(function(){
 'use strict';
 
 //----------------------------- Global Variables -----------------------------//
@@ -45,7 +46,6 @@ const ALL_CARDS = {
 	}
 };
 
-const GENERAL_SCORE_MODIFIER = 2;
 let roundWorth = 1;
 let gameEnd = false;
 
@@ -201,7 +201,7 @@ function generalPlayed() {
 
 function princePlayed() {
 	if (p2.cardPlayed.name === "Princess") {
-		p2.winner === true;
+		p2.winner = true;
 	} else {
 		addScore(p1);
 	}
@@ -235,3 +235,5 @@ function checkGeneral() {
 		p2.cardPlayed.strength += 2;
 	}
 }
+
+})();
