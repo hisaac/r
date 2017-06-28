@@ -1,40 +1,100 @@
 'use strict';
-let allCards = import ('./cards');
-const GENERAL_SCORE_MODIFIER = 2; // for adding strength to the next card because of the General
-let roundWorth = 1; // how many points go to the victor of the round
+
+//----------------------------- Global Variables -----------------------------//
+
+const ALL_CARDS = {
+	jester: {
+		name: "Jester",
+		strength: 0,
+		ability: "This round is a draw and carried over to the next."
+	},
+	princess: {
+		name: "Princess",
+		strength: 1,
+		ability: "If your opponent played the Prince, you win the game."
+	},
+	spy: {
+		name: "Spy",
+		strength: 2,
+		ability: "Next round, your opponent reveals their card first."
+	},
+	assassin: {
+		name: "Assassin",
+		strength: 3,
+		ability: "The lowest strength card wins."
+	},
+	minister: {
+		name: "Minister",
+		strength: 4,
+		ability: "Winning with this card counts as 2 victories."
+	},
+	wizard: {
+		name: "Wizard",
+		strength: 5,
+		ability: "Cancels the special power of your opponent's card."
+	},
+	general: {
+		name: "General",
+		strength: 6,
+		ability: "Your next card gets +2 strength."
+	},
+	prince: {
+		name: "Prince",
+		strength: 7,
+		ability: "You win the round."
+	}
+};
+
+const GENERAL_SCORE_MODIFIER = 2;
+let roundWorth = 1;
 let gameEnd = false;
 
 let p1 = {
-	cards: allCards,
+	cards: ALL_CARDS,
 	score: 0,
 	winner: false,
 	generalPlayed: false,
-	cardPlayed: null,
+	cardPlayed: {},
 	playsFirst: false
-}
+};
 
 let p2 = {
-	cards: allCards,
+	cards: ALL_CARDS,
 	score: 0,
 	winner: false,
 	generalPlayed: false,
-	cardPlayed: null,
+	cardPlayed: {},
 	playsFirst: false
-}
+};
 
-(function init(){
-	while (!gameEnd) {
+//------------------------------ Game Functions ------------------------------//
+
+function init() {
+	let p1Card = document.querySelector('input[name="p1CardPlayed"]:checked').value;
+	let p2Card = document.querySelector('input[name="p2CardPlayed"]:checked').value;
+
+	p1.cardPlayed = p1.cards[p1Card];
+	p2.cardPlayed = p2.cards[p2Card];
+
+	if (!gameEnd) {
 		checkWinner();
 		checkPlaysFirst();
 		playRound();
+	} else if (gameEnd && p1.winner) {
+		alert('Player 1 wins!');
+	} else if (gameEnd && p2.winner) {
+		alert('Player 2 wins!');
 	}
-})();
+
+	document.getElementById('p1Form').reset();
+	document.getElementById('p2Form').reset();
+}
 
 function playRound() {
 	checkGeneral();
 
 	if (p1.cardPlayed.name === p2.cardPlayed.name) {
-		roundWorth ++
+		roundWorth++;
 	} else {
 		switch(p1.cardPlayed.name){
 			case "Jester":
